@@ -15,7 +15,7 @@ LABEL_NOM = "Nom"                                   #Label utilisé dans le code
 LABEL_PRENOM = "Prenom"                             #Label utilisé dans le code et dans le .csv pour le prénom du candidat
 LABEL_NB_VOIX = "Nb_Voix"                           #Label utilisé dans le code et dans le .csv pour le nombre de voix qu'à obtenu un candidat
 
-SEPARATEUR = ";"                                     #Symbole utilisé pour délimiter les colonne dans le .csv
+SEPARATEUR = ";"                                    #Symbole utilisé pour délimiter les colonne dans le .csv
 
 
 def get_reponse_url(url: str) -> BeautifulSoup:
@@ -32,10 +32,11 @@ def traitement_prenom_nom(prenom_nom :str) -> tuple[str, str]:
 
     liste_prenom_nom = prenom_nom.split()[1:]       #On enlève le M./Mme
 
-    prenom = " ".join([mot for mot in liste_prenom_nom if mot.isupper()])
-    nom = " ".join([mot for mot in liste_prenom_nom if not mot.isupper()])
+    #Tout ce qui est en majuscule va dans nom, le reste dans prenom
+    nom = " ".join([mot for mot in liste_prenom_nom if mot.isupper()])
+    prenom = " ".join([mot for mot in liste_prenom_nom if not mot.isupper()])
 
-    return nom, prenom
+    return prenom, nom
 
 
 def traitement_circonscription(url_circonscription: str) -> str:
