@@ -28,41 +28,42 @@ def get_liste_url_circonscription(url_departement: str) -> list[str]:
     return liste_circo[2:-2]
 
 
-def get_resultats(url_circonscription: str)-> list[dict]:
+def get_resultats(url_circonscription: str)-> list[dict[str, str]]:
     """Retourne les résultats sous forme de liste de dictionnaire"""
     
     liste_donnes_candidats = []
     soup = get_reponse_url(url_circonscription)
-    select_tag :Tag = soup.find("table",{"class":CLASSE_TABLEAU})  #type: ignore
-    select_tag :Tag = select_tag.find("tbody")  # type: ignore
 
-    lignes :ResultSet[Tag] = select_tag.find_all("tr")
+    try:
+        select_tag :Tag = soup.find("table",{"class":CLASSE_TABLEAU})  #type: ignore
+        select_tag :Tag = select_tag.find("tbody")  # type: ignore
 
-    for ligne in lignes:
-        donnes_candidat = {}
-        data_brutes :ResultSet[Tag] = ligne.find_all("td")
-        
-        donnes_candidat[LABEL_NOM], donnes_candidat[LABEL_PRENOM] = traitement_prenom_nom(data_brutes[IDX_NOM_PRENOM].text)
-        donnes_candidat[LABEL_NB_VOIX] = int("".join(data_brutes[IDX_NB_VOIX].text.split()))
-        donnes_candidat[LABEL_CIRCONSCRIPTION] = traitement_circonscription(url_circonscription)
-        
-        liste_donnes_candidats.append(donnes_candidat)
+        lignes :ResultSet[Tag] = select_tag.find_all("tr")
 
-    return liste_donnes_candidats
+        for ligne in lignes:
+            donnes_candidat = {}
+            data_brutes :ResultSet[Tag] = ligne.find_all("td")
+            
+            donnes_candidat[LABEL_PRENOM], donnes_candidat[LABEL_NOM] = traitement_prenom_nom(data_brutes[IDX_NOM_PRENOM].text)
+            donnes_candidat[LABEL_NB_VOIX] = "".join(data_brutes[IDX_NB_VOIX].text.split())
+            donnes_candidat[LABEL_CIRCONSCRIPTION] = traitement_circonscription(url_circonscription)
+            
+            liste_donnes_candidats.append(donnes_candidat)
+
+        return liste_donnes_candidats
+
+    except:
+        return [{}]
 
 
 def sauvegarder(resultats: list[dict]) -> None:
     """Sauvegarde les données dans un fichier csv"""
 
-    df = pd.DataFrame(resultats, columns=[  LABEL_CIRCONSCRIPTION,
-                                            LABEL_NOM,
-                                            LABEL_PRENOM,
-                                            LABEL_NB_VOIX])
-    df.to_csv(NOM_FICHIER, index=False, encoding='utf-8', sep=";")
+    df = pd.DataFrame(resultats, columns=[LABEL_CIRCONSCRIPTION, LABEL_NOM, LABEL_PRENOM, LABEL_NB_VOIX])
+    df.to_csv(NOM_FICHIER, index=False, encoding='utf-8', sep=SEPARATEUR)
 
 
-
-def main():
+if __name__ == '__main__':
     resultats = []
     for departement in get_liste_url_departement():
         for circonscription in get_liste_url_circonscription(departement):
@@ -70,7 +71,3 @@ def main():
             resultats += get_resultats(circonscription)
 
     sauvegarder(resultats)
-
-
-if __name__ == '__main__':
-    main()

@@ -4,7 +4,7 @@ from bs4 import BeautifulSoup
 
 URL = "https://www.resultats-elections.interieur.gouv.fr/legislatives-2022/index.html"
 
-NOM_FICHIER = "file.csv"                            #Nom du fichier où sauvegarder les données
+NOM_FICHIER = "data.csv"                            #Nom du fichier où sauvegarder les données
 CLASSE_TABLEAU = "tableau-resultats-listes-ER"      #Nom de la classe du tableau web à scrapper
 
 IDX_NOM_PRENOM = 0                                  #Index de la colonne où trouver le nom et prénom du candidat
@@ -14,6 +14,8 @@ LABEL_CIRCONSCRIPTION = "Num_Circo"                 #Label utilisé dans le code
 LABEL_NOM = "Nom"                                   #Label utilisé dans le code et dans le .csv pour le nom du candidat
 LABEL_PRENOM = "Prenom"                             #Label utilisé dans le code et dans le .csv pour le prénom du candidat
 LABEL_NB_VOIX = "Nb_Voix"                           #Label utilisé dans le code et dans le .csv pour le nombre de voix qu'à obtenu un candidat
+
+SEPARATEUR = ";"                                     #Symbole utilisé pour délimiter les colonne dans le .csv
 
 
 def get_reponse_url(url: str) -> BeautifulSoup:
@@ -29,8 +31,10 @@ def traitement_prenom_nom(prenom_nom :str) -> tuple[str, str]:
     """
 
     liste_prenom_nom = prenom_nom.split()[1:]       #On enlève le M./Mme
-    prenom = liste_prenom_nom[0]                    #Le "1er" élément est le prénom
-    nom = " ".join(liste_prenom_nom[1:])            #Le reste est le nom
+
+    prenom = " ".join([mot for mot in liste_prenom_nom if mot.isupper()])
+    nom = " ".join([mot for mot in liste_prenom_nom if not mot.isupper()])
+
     return nom, prenom
 
 
