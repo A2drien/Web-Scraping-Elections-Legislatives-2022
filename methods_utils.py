@@ -33,8 +33,8 @@ def traitement_prenom_nom(prenom_nom :str) -> tuple[str, str]:
     liste_prenom_nom = prenom_nom.split()[1:]       #On enlève le M./Mme
 
     #Tout ce qui est en majuscule va dans nom, le reste dans prenom
-    nom = " ".join([mot for mot in liste_prenom_nom if mot.isupper()])
-    prenom = " ".join([mot for mot in liste_prenom_nom if not mot.isupper()])
+    nom = " ".join([mot for mot in liste_prenom_nom if mot.isupper() or mot == '-'])
+    prenom = " ".join([mot for mot in liste_prenom_nom if not mot.isupper() and mot != '-'])
 
     return prenom, nom
 
