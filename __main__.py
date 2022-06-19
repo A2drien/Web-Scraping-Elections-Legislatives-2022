@@ -17,15 +17,17 @@ def get_liste_url_departement() -> list[str]:
 
 def get_liste_url_circonscription(url_departement: str) -> list[str]:
     """Retourne la liste des URLs de toutes les circonscriptions du département"""
+
+    if url_departement == "https://www.resultats-elections.interieur.gouv.fr/legislatives-2022/099/index.html":
+        soup = get_reponse_url(url_departement)
+        select_tag = soup.find("table", {"class" : "table table-bordered"}) #type: ignore
+        liste_circo = [urljoin(url_departement, link.get('href')) for link in select_tag.find_all('a')]  # type: ignore
     
     soup = get_reponse_url(url_departement)
-    liste_circo = [urljoin(url_departement, link.get('href')) for link in soup.find_all('a')]
+    select_tag = soup.find_all("div", {"class" : "offset2 span8"}) #type: ignore
+    liste_circo = [urljoin(url_departement, link.get('href')) for link in select_tag[1].find_all('a')]
 
-    #Bug connu sur ce lien précis, qui rajoute un lien supplémentaire
-    if url_departement == "https://www.resultats-elections.interieur.gouv.fr/legislatives-2022/099/index.html":
-        liste_circo = liste_circo[1:]
-
-    return liste_circo[2:-2]
+    return liste_circo
 
 
 def get_resultats(url_circonscription: str)-> list[dict[str, str]]:
@@ -35,8 +37,8 @@ def get_resultats(url_circonscription: str)-> list[dict[str, str]]:
     soup = get_reponse_url(url_circonscription)
 
     try:
-        select_tag :Tag = soup.find("table",{"class":CLASSE_TABLEAU})  #type: ignore
-        select_tag :Tag = select_tag.find("tbody")  # type: ignore
+        select_tag :Tag = soup.find_all("table",{"class":CLASSE_TABLEAU})  #type: ignore
+        select_tag :Tag = select_tag[-2].find("tbody")  # type: ignore
 
         lignes :ResultSet[Tag] = select_tag.find_all("tr")
 

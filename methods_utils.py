@@ -41,7 +41,7 @@ def traitement_prenom_nom(prenom_nom :str) -> tuple[str, str]:
 
 def traitement_circonscription(url_circonscription: str) -> str:
     """Prend une URL en paramètre et retourne la circonscription au format xxx-yy"""
-
+    
     format = url_circonscription[-10:-5]
     num_departement = format[:3]
     num_circonscription = format[3:]
@@ -50,3 +50,7 @@ def traitement_circonscription(url_circonscription: str) -> str:
     if num_departement == "099": num_departement = "999"
 
     return num_departement + "-" + num_circonscription
+
+if __name__ == '__main__':
+    L1 = [{}]
+    print(L1 + None)
