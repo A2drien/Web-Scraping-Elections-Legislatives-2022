@@ -5,7 +5,9 @@ from bs4 import BeautifulSoup
 URL = "https://www.resultats-elections.interieur.gouv.fr/legislatives-2022/index.html"
 
 NOM_FICHIER = "data.csv"                            #Nom du fichier où sauvegarder les données
-CLASSE_TABLEAU = "tableau-resultats-listes-ER"      #Nom de la classe du tableau web à scrapper
+CLASSE_TABLE_RESULTATS = "tableau-resultats-listes-ER"      #Nom de la classe du tableau web à scrapper
+CLASSE_TABLE_EXCEPTION_DEP_99 = "table table-bordered"
+CLASSE_DIVISION = "offset2 span8"
 
 IDX_NOM_PRENOM = 0                                  #Index de la colonne où trouver le nom et prénom du candidat
 IDX_NB_VOIX = 2                                     #Index de la colonne où trouver le nombre de voix qu'à obtenu un candidat
@@ -27,10 +29,10 @@ def get_reponse_url(url: str) -> BeautifulSoup:
     return BeautifulSoup(requests.get(url).text, "html.parser")
 
 
-def traitement_prenom_nom(prenom_nom :str) -> tuple[str, str]:
+def traitement_prenom_nom(prenom_nom: str) -> tuple[str, str]:
     """
     Prend le nom/prénom ent paramètre et retourne le nom et le prénom
-    Ex : 'M. Jean BON LE GRAND' renverra : 'Jean', 'BON LE GRAND'
+    Ex: 'M. Jean BON LE GRAND' renverra : 'Jean', 'BON LE GRAND'
     """
 
     liste_prenom_nom = prenom_nom.split()[1:]       #On enlève le M./Mme
@@ -42,7 +44,7 @@ def traitement_prenom_nom(prenom_nom :str) -> tuple[str, str]:
     return prenom, nom
 
 
-def traitement_circonscription(url_circonscription: str) -> str:
+def get_circonscription(url_circonscription: str) -> str:
     """Prend une URL en paramètre et retourne la circonscription au format xxx-yy"""
     
     format = url_circonscription[-10:-5]
@@ -55,6 +57,8 @@ def traitement_circonscription(url_circonscription: str) -> str:
     return num_departement + "-" + num_circonscription
 
 
-def conversion_nombre(nombre :int) -> str:
+def conversion_nombre(nombre: int) -> str:
+    """Retourne un chiffre en format XX au de lieu de X"""
+
     if nombre < 10: return "0" + str(nombre)
     else: return str(nombre)
