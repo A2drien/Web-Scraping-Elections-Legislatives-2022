@@ -17,6 +17,9 @@ LABEL_NB_VOIX = "Nb_Voix"                           #Label utilisé dans le code
 
 SEPARATEUR = ";"                                    #Symbole utilisé pour délimiter les colonne dans le .csv
 
+EXCEPTION_DEP_75 = "https://www.resultats-elections.interieur.gouv.fr/legislatives-2022/075/index.html"
+EXCEPTION_DEP_99 = "https://www.resultats-elections.interieur.gouv.fr/legislatives-2022/099/index.html"
+
 
 def get_reponse_url(url: str) -> BeautifulSoup:
     """Retourne le code HTML de la page demandée"""
@@ -51,6 +54,7 @@ def traitement_circonscription(url_circonscription: str) -> str:
 
     return num_departement + "-" + num_circonscription
 
-if __name__ == '__main__':
-    L1 = [{}]
-    print(L1 + None)
+
+def conversion_nombre(nombre :int) -> str:
+    if nombre < 10: return "0" + str(nombre)
+    else: return str(nombre)

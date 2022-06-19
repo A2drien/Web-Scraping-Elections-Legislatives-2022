@@ -18,10 +18,14 @@ def get_liste_url_departement() -> list[str]:
 def get_liste_url_circonscription(url_departement: str) -> list[str]:
     """Retourne la liste des URLs de toutes les circonscriptions du département"""
 
-    if url_departement == "https://www.resultats-elections.interieur.gouv.fr/legislatives-2022/099/index.html":
+    if url_departement == EXCEPTION_DEP_99:
         soup = get_reponse_url(url_departement)
         select_tag = soup.find("table", {"class" : "table table-bordered"}) #type: ignore
         liste_circo = [urljoin(url_departement, link.get('href')) for link in select_tag.find_all('a')]  # type: ignore
+    
+    if url_departement == EXCEPTION_DEP_75:
+        liste_circo = [f"https://www.resultats-elections.interieur.gouv.fr/legislatives-2022/075/075{conversion_nombre(i)}.html" for i in range(1,19)]  # type: ignore
+        return liste_circo
     
     soup = get_reponse_url(url_departement)
     select_tag = soup.find_all("div", {"class" : "offset2 span8"}) #type: ignore
